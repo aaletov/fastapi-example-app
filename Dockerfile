@@ -6,4 +6,3 @@ RUN export POETRY=${HOME}/.local/bin/poetry && \
     ${POETRY} config virtualenvs.in-project true && \
     ${POETRY} install
 RUN chown -R unit:unit /app/fastapi_example_app
-COPY ./*.json /docker-entrypoint.d/
