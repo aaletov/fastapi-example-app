@@ -129,15 +129,23 @@ curl -X PUT --data-binary @/config/config.json \
 
 Получим ответ
 
-```
+```JSON
 {
     "success": "Reconfiguration done."
 }
 ```
 
-## Оптимизация
-
 ## Настройка SSL/TLS
+
+Для настройки SSL необходимо сгенерировать бандл из сертификата и ключа,
+сгенерированных, например, OpenSSL и разместить его на сервере
+
+```bash
+cat cert.crt key.key > bundle.pem
+```
+
+Если бандл был размещен по пути `/ssl/bundle.pem`, то загрузить его можно через
+сокет сервера по адресу `/certificates/bundle`.
 
 ```bash
 curl -X PUT --data-binary @/ssl/bundle.pem --unix-socket \
@@ -145,16 +153,31 @@ curl -X PUT --data-binary @/ssl/bundle.pem --unix-socket \
     http://localhost/certificates/bundle
 ```
 
+Получим ответ
+
 ```JSON
-"listeners": {
+{
+    "success": "Certificate chain uploaded."
+}
+```
+
+Далее необходимо обновить конфигурацию сервера, внести туда добавленный бандл, а
+также обновить порт на 443, используемый для HTTPS. Создадим файл `put.json`
+
+```JSON
+{
     "*:443": {
         "pass": "routes",
         "tls": {
             "certificate": "bundle"
         }
     }
-},
+}
 ```
+
+Если файл был размещен по пути `/ssl/put.json`, то загрузить его можно по адресу
+`/config/listeners/`, API **unit** обновит объект, находящийся по указанному
+адресу, при обращении к нему с методом PUT
 
 ```bash
 curl -X PUT --data-binary @/ssl/put.json \
@@ -164,9 +187,9 @@ curl -X PUT --data-binary @/ssl/put.json \
 
 Получим ответ
 
-```
+```JSON
 {
-    "success": "Certificate chain uploaded."
+    "success": "Reconfiguration done."
 }
 ```
 
