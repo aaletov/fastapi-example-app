@@ -1,9 +1,30 @@
 {
     "listeners": {
         "*:80": {
-            "pass": "applications/fastapi"
+            "pass": "routes"
         }
     },
+
+    "routes": [
+        {
+            "match": {
+                "uri": [
+                    "/"
+                ]
+            },
+
+            "action": {
+                "rewrite": "/docs",
+                "pass": "applications/fastapi"
+            }
+        },
+
+        {
+            "action": {
+                "pass": "applications/fastapi"
+            }
+        }
+    ],
 
     "applications": {
         "fastapi": {
@@ -12,6 +33,12 @@
             "home": "/app/.venv/",
             "module": "asgi",
             "callable": "app"
+        }
+    },
+
+    "settings": {
+        "http": {
+            "log_route": true
         }
     }
 }

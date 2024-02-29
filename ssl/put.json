@@ -1,0 +1,8 @@
+{
+    "*:443": {
+        "pass": "routes",
+        "tls": {
+            "certificate": "bundle"
+        }
+    }
+}
